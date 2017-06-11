@@ -2459,7 +2459,11 @@ int ProcParams::save (const Glib::ustring &fname, const Glib::ustring &fname2, b
 
         // lens profile
         if (!pedited || pedited->lensProf.lcpFile) {
-            keyFile.set_string  ("LensProfile", "LCPFile", relativePathIfInside(fname, fnameAbsolute, lensProf.lcpFile));
+            auto pathToStore = relativePathIfInside(fname, fnameAbsolute, lensProf.lcpFile);
+            if (!options.rtSettings.lensProfilesPath.empty()) {
+                pathToStore = relativePathIfInside(options.rtSettings.lensProfilesPath + G_DIR_SEPARATOR_S + "dummyfile", false, pathToStore);
+            }
+            keyFile.set_string  ("LensProfile", "LCPFile", pathToStore);
         }
 
         if (!pedited || pedited->lensProf.useDist) {
@@ -5627,7 +5631,11 @@ int ProcParams::load (const Glib::ustring &fname, ParamsEdited* pedited)
         // lens profile
         if (keyFile.has_group ("LensProfile")) {
             if (keyFile.has_key ("LensProfile", "LCPFile")) {
-                lensProf.lcpFile = expandRelativePath(fname, "", keyFile.get_string ("LensProfile", "LCPFile"));
+                auto fileToLoad = keyFile.get_string ("LensProfile", "LCPFile");
+                if (!options.rtSettings.lensProfilesPath.empty()) {
+                    fileToLoad = expandRelativePath(options.rtSettings.lensProfilesPath + G_DIR_SEPARATOR_S + "dummyfile", "", fileToLoad);
+                }
+                lensProf.lcpFile = expandRelativePath(fname, "", fileToLoad);
 
                 if (pedited) {
                     pedited->lensProf.lcpFile = true;
