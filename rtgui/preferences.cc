@@ -504,6 +504,22 @@ Gtk::Widget* Preferences::getProcParamsPanel ()
     fdp->add (*vbdp);
     mvbpp->pack_start (*fdp, Gtk::PACK_SHRINK, 4);
 
+    Gtk::Frame* fld = Gtk::manage (new Gtk::Frame (M("PREFERENCES_LENSPROFILEDIR")) );
+    Gtk::HBox* hb42a = Gtk::manage (new Gtk::HBox ());
+    lensProfileDir = Gtk::manage(new Gtk::FileChooserButton(M("PREFERENCES_DIRLENSPROFILEDIR"), Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER));
+    Gtk::Label *ldLab = Gtk::manage(new Gtk::Label(M("PREFERENCES_DIRLENSPROFILEDIR") + ":"));
+    hb42a->pack_start(*ldLab , Gtk::PACK_SHRINK, 4 );
+    hb42a->pack_start(*lensProfileDir, Gtk::PACK_EXPAND_WIDGET, 4);
+    ldLabel = Gtk::manage(new Gtk::Label("Found:"));
+    Gtk::VBox* vbld = Gtk::manage (new Gtk::VBox ());
+    vbld->pack_start( *hb42a, Gtk::PACK_SHRINK, 4);
+    vbld->pack_start( *ldLabel, Gtk::PACK_SHRINK, 4 );
+    fld->add( *vbld );
+    mvbpp->pack_start ( *fld , Gtk::PACK_SHRINK, 4);
+
+    //dfconn = lensProfileDir->signal_file_set().connect ( sigc::mem_fun(*this, &Preferences::lensProfileDirChanged), true);
+    dfconn = lensProfileDir->signal_current_folder_changed().connect ( sigc::mem_fun(*this, &Preferences::lensProfileDirChanged), true);
+
     Gtk::Frame* fdf = Gtk::manage (new Gtk::Frame (M("PREFERENCES_DARKFRAME")) );
     Gtk::HBox* hb42 = Gtk::manage (new Gtk::HBox ());
     darkFrameDir = Gtk::manage(new Gtk::FileChooserButton(M("PREFERENCES_DIRDARKFRAMES"), Gtk::FILE_CHOOSER_ACTION_SELECT_FOLDER));
@@ -1738,6 +1754,7 @@ void Preferences::storePreferences ()
 
     moptions.tunnelMetaData = ckbTunnelMetaData->get_active ();
 
+    moptions.rtSettings.lensProfilesPath = lensProfileDir->get_filename();
     moptions.rtSettings.darkFramesPath =   darkFrameDir->get_filename();
     moptions.rtSettings.flatFieldsPath =   flatFieldDir->get_filename();
 
@@ -1975,6 +1992,9 @@ void Preferences::fillPreferences ()
     rgbDenoiseTreadLimitSB->set_value(moptions.rgbDenoiseThreadLimit);
     clutCacheSizeSB->set_value(moptions.clutCacheSize);
     maxInspectorBuffersSB->set_value(moptions.maxInspectorBuffers);
+
+    lensProfileDir->set_current_folder( moptions.rtSettings.lensProfilesPath );
+    lensProfileDirChanged ();
 
     darkFrameDir->set_current_folder( moptions.rtSettings.darkFramesPath );
     darkFrameChanged ();
@@ -2451,6 +2471,16 @@ void Preferences::clearAllPressed ()
     cacheMgr->clearAll ();
 }
 
+void Preferences::lensProfileDirChanged ()
+{
+    //Glib::ustring s(lensProfileDir->get_filename());
+    Glib::ustring s(lensProfileDir->get_current_folder());
+    //if( s.compare( rtengine::dfm.getPathname()) !=0 ){
+    rtengine::dfm.init( s );
+    updateLDinfos();
+    //}
+}
+
 void Preferences::darkFrameChanged ()
 {
     //Glib::ustring s(darkFrameDir->get_filename());
@@ -2469,6 +2499,14 @@ void Preferences::flatFieldChanged ()
     rtengine::ffm.init( s );
     updateFFinfos();
     //}
+}
+
+void Preferences::updateLDinfos()
+{
+    int t1, t2;
+    rtengine::dfm.getStat(t1, t2);
+    Glib::ustring s = Glib::ustring::compose("%1: %2 %3, %4 %5", M("PREFERENCES_LENSPROFILEDIRFOUND"), t1, M("PREFERENCES_DARKFRAMESHOTS"), t2, M("PREFERENCES_DARKFRAMETEMPLATES"));
+    ldLabel->set_text(s);
 }
 
 void Preferences::updateDFinfos()

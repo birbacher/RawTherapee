@@ -95,9 +95,11 @@ class Preferences : public Gtk::Dialog, public ProfileStoreListener
     Gtk::RadioButton* edGimp;
     Gtk::RadioButton* edPS;
     Gtk::RadioButton* edOther;
+    Gtk::FileChooserButton* lensProfileDir;
     Gtk::FileChooserButton* darkFrameDir;
     Gtk::FileChooserButton* flatFieldDir;
     Gtk::FileChooserButton* clutsDir;
+    Gtk::Label *ldLabel;
     Gtk::Label *dfLabel;
     Gtk::Label *ffLabel;
 
@@ -219,6 +221,7 @@ class Preferences : public Gtk::Dialog, public ProfileStoreListener
     void storePreferences ();
     void parseDir       (Glib::ustring dirname, std::vector<Glib::ustring>& items, Glib::ustring ext);
     void parseThemeDir  (Glib::ustring dirname);
+    void updateLDinfos ();
     void updateDFinfos ();
     void updateFFinfos ();
     void workflowUpdate();
@@ -266,6 +269,7 @@ public:
     void delExtPressed ();
     void moveExtUpPressed ();
     void moveExtDownPressed ();
+    void lensProfileDirChanged ();
     void darkFrameChanged ();
     void flatFieldChanged ();
     void clearProfilesPressed ();
