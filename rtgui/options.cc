@@ -612,6 +612,7 @@ void Options::setDefaults ()
         0, // ADDSET_WB_TEMPBIAS
     };
 
+    rtSettings.lensProfilesPath.clear();
     rtSettings.darkFramesPath = "";
     rtSettings.flatFieldsPath = "";
 #ifdef WIN32
@@ -801,6 +802,10 @@ int Options::readFromFile (Glib::ustring fname)
 
                 if (keyFile.has_key ("General", "Theme")) {
                     theme           = keyFile.get_string ("General", "Theme");
+                }
+
+                if ( keyFile.has_key ("General", "LensProfilesPath")) {
+                    rtSettings.lensProfilesPath = keyFile.get_string ("General", "LensProfilesPath");
                 }
 
                 if ( keyFile.has_key ("General", "DarkFramesPath")) {
@@ -1877,6 +1882,7 @@ int Options::saveToFile (Glib::ustring fname)
         keyFile.set_boolean ("General", "LanguageAutoDetect", languageAutoDetect);
         keyFile.set_string  ("General", "Theme", theme);
         keyFile.set_string  ("General", "Version", RTVERSION);
+        keyFile.set_string  ("General", "LensProfilesPath", rtSettings.lensProfilesPath);
         keyFile.set_string  ("General", "DarkFramesPath", rtSettings.darkFramesPath);
         keyFile.set_string  ("General", "FlatFieldsPath", rtSettings.flatFieldsPath);
         keyFile.set_boolean ("General", "Verbose", rtSettings.verbose);

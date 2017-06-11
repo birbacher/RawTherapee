@@ -517,8 +517,8 @@ Gtk::Widget* Preferences::getProcParamsPanel ()
     fld->add( *vbld );
     mvbpp->pack_start ( *fld , Gtk::PACK_SHRINK, 4);
 
-    //dfconn = lensProfileDir->signal_file_set().connect ( sigc::mem_fun(*this, &Preferences::lensProfileDirChanged), true);
-    dfconn = lensProfileDir->signal_current_folder_changed().connect ( sigc::mem_fun(*this, &Preferences::lensProfileDirChanged), true);
+    //lpconn = lensProfileDir->signal_file_set().connect ( sigc::mem_fun(*this, &Preferences::lensProfileDirChanged), true);
+    lpconn = lensProfileDir->signal_current_folder_changed().connect ( sigc::mem_fun(*this, &Preferences::lensProfileDirChanged), true);
 
     Gtk::Frame* fdf = Gtk::manage (new Gtk::Frame (M("PREFERENCES_DARKFRAME")) );
     Gtk::HBox* hb42 = Gtk::manage (new Gtk::HBox ());
@@ -1800,6 +1800,7 @@ void Preferences::fillPreferences ()
     fconn.block (true);
     cpfconn.block (true);
     sconn.block (true);
+    lpconn.block (true);
     dfconn.block (true);
     ffconn.block (true);
     rpconn.block(true);
@@ -2024,6 +2025,7 @@ void Preferences::fillPreferences ()
     fconn.block (false);
     tconn.block (false);
     sconn.block (false);
+    lpconn.block (false);
     dfconn.block (false);
     ffconn.block (false);
     rpconn.block(true);
