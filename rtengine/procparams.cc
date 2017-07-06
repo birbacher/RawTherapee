@@ -5633,6 +5633,7 @@ int ProcParams::load (const Glib::ustring &fname, ParamsEdited* pedited)
             if (keyFile.has_key ("LensProfile", "LCPFile")) {
                 auto fileToLoad = keyFile.get_string ("LensProfile", "LCPFile");
                 if (!options.rtSettings.lensProfilesPath.empty()) {
+                    fileToLoad = Glib::path_get_basename(fileToLoad);
                     fileToLoad = expandRelativePath(options.rtSettings.lensProfilesPath + G_DIR_SEPARATOR_S + "dummyfile", "", fileToLoad);
                 }
                 lensProf.lcpFile = expandRelativePath(fname, "", fileToLoad);
